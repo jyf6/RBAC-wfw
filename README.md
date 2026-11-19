@@ -8,6 +8,7 @@
 
 | 模块 | 地址 | 作用 |
 | --- | --- | --- |
+| common | - | 跨服务共享基础模块（纯库模块，不独立运行） |
 | gateway | http://localhost:8080 | 路由 `/api/auth/**`、`/api/customers/**`，路径保持不变 |
 | auth-service | http://localhost:8081 | 认证服务骨架 |
 | customer-service | http://localhost:8082 | 客户服务骨架 |

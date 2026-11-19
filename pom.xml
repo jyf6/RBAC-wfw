@@ -17,6 +17,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>common</module>
         <module>gateway</module>
         <module>auth-service</module>
         <module>customer-service</module>
@@ -31,6 +32,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.example.rbac</groupId>
+                <artifactId>common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
