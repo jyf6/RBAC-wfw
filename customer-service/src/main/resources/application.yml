@@ -1,0 +1,20 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: customer-service
+  datasource:
+    url: jdbc:h2:mem:rbac_customer;MODE=MySQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  flyway:
+    locations: classpath:db/migration
+sa-token:
+  token-name: Authorization
+  token-prefix: Bearer
+  is-read-cookie: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

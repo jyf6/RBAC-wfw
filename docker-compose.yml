@@ -1,0 +1,68 @@
+# 本地中间件统一编排：MySQL / Redis / RabbitMQ / Nacos
+name: rbac
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: middleware-mysql
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      TZ: Asia/Shanghai
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$${MYSQL_ROOT_PASSWORD}\" mysqladmin ping -h 127.0.0.1 -uroot --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: middleware-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  nacos:
+    image: nacos/nacos-server:v3.3.0
+    container_name: middleware-nacos
+    restart: unless-stopped
+    environment:
+      MODE: standalone
+      NACOS_AUTH_TOKEN: "U2VjcmV0S2V5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIz"
+      NACOS_AUTH_ENABLE: "false"
+      NACOS_AUTH_IDENTITY_KEY: serverIdentity
+      NACOS_AUTH_IDENTITY_VALUE: "2c05aeb990498d0d6db2bb0bacecdad721563add0ae34433"
+      TZ: Asia/Shanghai
+    ports:
+      - "127.0.0.1:${NACOS_CONSOLE_PORT:-18880}:8080"
+      - "127.0.0.1:${NACOS_PORT:-8848}:8848"
+      - "127.0.0.1:${NACOS_GRPC_PORT:-9848}:9848"
+    volumes:
+      - nacos-data:/home/nacos/data
+
+volumes:
+  # 复用原有 MySQL 数据卷
+  mysql-data:
+    external: true
+    name: flexi-admin-starter_mysql-data
+  # 复用原有 Redis 数据卷
+  redis-data:
+    external: true
+    name: cfba2eeb1bd1d04bebae4587a1ef89ee82a2c556dd555032962fbee99dfd0659
+  # Nacos 持久化数据卷
+  nacos-data:
